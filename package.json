@@ -1,0 +1,24 @@
+{
+  "name": "legendary-todo-api",
+  "description": "",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leeodesign/legendary-todo-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leeodesign/legendary-todo-api/issues"
+  },
+  "homepage": "https://github.com/leeodesign/legendary-todo-api#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
