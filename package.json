@@ -3,7 +3,6 @@
   "description": "",
   "version": "1.0.0",
   "main": "src/index.js",
-  "devDependencies": {},
   "scripts": {
     "start": "nodemon ."
   },
@@ -19,6 +18,7 @@
   },
   "homepage": "https://github.com/leeodesign/legendary-todo-api#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "uuid": "^8.3.2"
   }
 }
