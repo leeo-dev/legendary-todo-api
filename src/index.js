@@ -51,4 +51,21 @@ app.delete("/users/:id", (request, response) => {
     return response.status(404).json({ error: error.message });
   }
 });
+app.patch("/users/:id", (request, response) => {
+  try {
+    const { name, username } = request.body;
+    const { id } = request.params;
+    const user = users.find((user) => user.id === id);
+    const isUsernameAlreadyInUse = users.some(
+      (user) => user.username === username
+    );
+    if (isUsernameAlreadyInUse) throw new Error("Username already in use");
+    user.name = name;
+    user.username = username;
+    if (!user) throw new Error("User not found or id incorrect!");
+    return response.json(users);
+  } catch (error) {
+    return response.status(404).json({ error: error.message });
+  }
+});
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
