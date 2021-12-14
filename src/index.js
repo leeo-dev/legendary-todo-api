@@ -39,4 +39,16 @@ app.get("/users/:id", (request, response) => {
     return response.status(404).json({ error: error.message });
   }
 });
+app.delete("/users/:id", (request, response) => {
+  try {
+    const { id } = request.params;
+    const userIndex = users.findIndex((user) => user.id === id);
+    console.log(userIndex);
+    if (userIndex < 0) throw new Error("User not found or id incorrect!");
+    users.splice(userIndex, 1);
+    return response.status(204).json();
+  } catch (error) {
+    return response.status(404).json({ error: error.message });
+  }
+});
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
