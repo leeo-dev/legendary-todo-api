@@ -26,4 +26,17 @@ app.post("/users", (request, response) => {
     return response.status(203).json({ error: error.message });
   }
 });
+app.get("/users", (request, response) => {
+  return response.json({ users, total: users.length });
+});
+app.get("/users/:id", (request, response) => {
+  try {
+    const { id } = request.params;
+    const user = users.find((user) => user.id === id);
+    if (!user) throw new Error("User not found or id incorrect!");
+    return response.json(user);
+  } catch (error) {
+    return response.status(404).json({ error: error.message });
+  }
+});
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
