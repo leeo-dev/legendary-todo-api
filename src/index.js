@@ -7,6 +7,34 @@ const users = [
     id: "46fa78ab-e021-4056-8a89-64bf3497e7ad",
     name: "Leonardo Albuquerque",
     username: "leeodesign",
+    todos: [
+      {
+        id: "f9dd42db-99cf-46f7-84a3-f86a2f40016f",
+        title: "Terminar API Todos",
+        done: false,
+        deadline: "2021-12-19T00:00:00.000Z",
+        created_at: "2021-12-15T01:49:49.078Z",
+      },
+      {
+        id: "f9dd42db-99cf-46f7-84a3-f86a2f40016f",
+        title: "Buy new Shoes",
+        done: true,
+        deadline: "2021-12-19T00:00:00.000Z",
+        created_at: "2021-12-15T01:49:49.078Z",
+      },
+      {
+        id: "f9dd42db-99cf-46f7-84a3-f86a2f40016f",
+        title: "Shopping with friends",
+        done: true,
+        deadline: "2021-12-19T00:00:00.000Z",
+        created_at: "2021-12-15T01:49:49.078Z",
+      },
+    ],
+  },
+  {
+    id: "86543479-2fcb-400c-bd9f-84592ce0e247",
+    name: "Ricardo Albuquerque",
+    username: "ricalb",
     todos: [],
   },
 ];
@@ -90,19 +118,53 @@ app.post("/todos", checkExistsUserAccount, (request, response) => {
     const { title, deadline } = request.body;
     const dateConverted = brDateConvertToUs(deadline);
     const today = new Date();
-    // today.setHours(5, 5, 5, 60);
-    console.log(today);
+
     const dueDate = new Date(dateConverted);
     const isDeadlineValid = dueDate >= today;
     if (!isDeadlineValid)
       throw new Error(
-        "Deadline is invalid, it should be equal or greater then today"
+        "Deadline is invalid, it should be equal or greater than today"
       );
-    const newTodo = { id: uuid(), title, deadline: dueDate, created_at: today };
+    const newTodo = {
+      id: uuid(),
+      title,
+      done: false,
+      deadline: dueDate,
+      created_at: today,
+    };
     user.todos.push(newTodo);
     response.json(users);
   } catch (error) {
-    return response.status(400).json({ error: error.message });
+    return response.status(401).json({ error: error.message });
+  }
+});
+app.get("/todos", checkExistsUserAccount, (request, response) => {
+  const { user } = request;
+  const done = user.todos.filter((todo) => {
+    if (todo.done) return todo;
+  });
+  console.log(done);
+  const remain = user.todos.filter((todo) => {
+    if (!todo.done) return todo;
+  });
+  return response.json({
+    todos: user.todos,
+    total: user.todos.length,
+    done,
+    done_total: done.length,
+    remain,
+    remain_total: remain.length,
+  });
+});
+app.get("/todos/:id", checkExistsUserAccount, (request, response) => {
+  try {
+    const { user } = request;
+    const { id } = request.params;
+    const todo = user.todos.find((todo) => todo.id === id);
+    if (!todo) throw new Error("Todo not found!");
+    return response.json(todo);
+  } catch (error) {
+    return response.status(404).json({ error: error.message });
   }
 });
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
