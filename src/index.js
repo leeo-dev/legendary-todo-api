@@ -10,6 +10,22 @@ const users = [
     todos: [],
   },
 ];
+function checkExistsUserAccount(request, response, next) {
+  try {
+    const { username } = request.headers;
+    const user = users.find((user) => user.username === username);
+    if (!user) throw new Error("User not found!");
+    request.user = user;
+    next();
+  } catch (error) {
+    return response.status(400).json({ error: error.message });
+  }
+}
+function brDateConvertToUs(stringDate) {
+  const arrayDate = stringDate.split("/");
+  const invertedDate = arrayDate.reverse();
+  return invertedDate.join("-");
+}
 app.use(express.json());
 app.post("/users", (request, response) => {
   try {
@@ -21,12 +37,12 @@ app.post("/users", (request, response) => {
     if (isUsernameAlreadyInUse) throw new Error("Username already in use");
     const newUser = { id, name, username, todos: [] };
     users.push(newUser);
-    return response.json(users);
+    return response.status(201).json(users);
   } catch (error) {
-    return response.status(203).json({ error: error.message });
+    return response.status(400).json({ error: error.message });
   }
 });
-app.get("/users", (request, response) => {
+app.get("/users", checkExistsUserAccount, (request, response) => {
   return response.json({ users, total: users.length });
 });
 app.get("/users/:id", (request, response) => {
@@ -66,6 +82,27 @@ app.patch("/users/:id", (request, response) => {
     return response.json(users);
   } catch (error) {
     return response.status(404).json({ error: error.message });
+  }
+});
+app.post("/todos", checkExistsUserAccount, (request, response) => {
+  try {
+    const { user } = request;
+    const { title, deadline } = request.body;
+    const dateConverted = brDateConvertToUs(deadline);
+    const today = new Date();
+    // today.setHours(5, 5, 5, 60);
+    console.log(today);
+    const dueDate = new Date(dateConverted);
+    const isDeadlineValid = dueDate >= today;
+    if (!isDeadlineValid)
+      throw new Error(
+        "Deadline is invalid, it should be equal or greater then today"
+      );
+    const newTodo = { id: uuid(), title, deadline: dueDate, created_at: today };
+    user.todos.push(newTodo);
+    response.json(users);
+  } catch (error) {
+    return response.status(400).json({ error: error.message });
   }
 });
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
