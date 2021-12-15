@@ -180,4 +180,25 @@ app.get("/todos/:id", checkExistsUserAccount, (request, response) => {
     return response.status(404).json({ error: error.message });
   }
 });
+app.patch("/todos/:id", checkExistsUserAccount, (request, response) => {
+  try {
+    const { user } = request;
+    const { title, deadline } = request.body;
+    const { id } = request.params;
+    const todo = user.todos.find((todo) => todo.id === id);
+  } catch (error) {
+    response.status().json({ error: error.message });
+  }
+});
+app.patch("/todos/:id/done", checkExistsUserAccount, (request, response) => {
+  try {
+    const { user } = request;
+    const { id } = request.params;
+    const todo = user.todos.find((todo) => todo.id === id);
+    todo.done = true;
+    return response.json({ todo });
+  } catch (error) {
+    response.status().json({ error: error.message });
+  }
+});
 app.listen(PORT, () => console.log(`Server is running ${PORT}`));
