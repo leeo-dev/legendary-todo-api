@@ -186,8 +186,19 @@ app.patch("/todos/:id", checkExistsUserAccount, (request, response) => {
     const { title, deadline } = request.body;
     const { id } = request.params;
     const todo = user.todos.find((todo) => todo.id === id);
+    const dateConverted = brDateConvertToUs(deadline);
+    const today = new Date();
+    const dueDate = new Date(dateConverted);
+    const isDeadlineValid = dueDate >= today;
+    if (!isDeadlineValid)
+      throw new Error(
+        "Deadline is invalid, it should be equal or greater than today"
+      );
+    todo.title = title;
+    todo.deadline = dueDate;
+    return response.json(todo);
   } catch (error) {
-    response.status().json({ error: error.message });
+    response.status(400).json({ error: error.message });
   }
 });
 app.patch("/todos/:id/done", checkExistsUserAccount, (request, response) => {
